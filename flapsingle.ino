@@ -2,17 +2,14 @@
 Fallblattanzeiger 
 Versions chronology:
 version 1   - 18.10.2020 Simon Widmer 
-
-D3 => Rx = RO of MAX485 - pin 1
-D4 => Tx = DI of MAX485 - pin 4
-D8 => RTS = RE/DE of MAX485 - pins 2&3
 */
+
 #include <Wire.h>
 #include <SoftwareSerial.h>
 
-#define RX        3    // Soft Serial RS485 Receive pin
-#define TX        6    // Soft Serial RS485 Transmit pin
-#define RTS       7    // RS485 Direction control
+#define RX        3    // Soft Serial RS485 RO
+#define TX        6    // Soft Serial RS485 DI
+#define RTS       7    // RS485 Direction control DE / ^RE
 #define POT       A0    // Potentiometer
 #define PB1       2    // Pushbutton
 #define DIP1      12    // DIP1
