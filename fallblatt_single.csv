@@ -1,0 +1,19 @@
+Reference, Quantity, Value, Footprint,Order Number,Total,
+C1 ,1,10uF/50V,Capacitor_SMD:C_1210_3225Metric_Pad1.42x2.65mm_HandSolder,KEM X5R1210 10U,3,
+C2 ,1,22uF/10V,Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder,X7R-G1206 22/10,3,
+C5 C3 ,2,100n,Capacitor_SMD:C_0805_2012Metric_Pad1.15x1.40mm_HandSolder,X7R-G0805 100N,6,
+D1 D2 ,2,LED,LED_SMD:LED_0805_2012Metric_Pad1.15x1.40mm_HandSolder,SMD-LED 0805 RT,,ok
+J1 ,1,Conn_01x04_Male,"Connector_Phoenix_MC_HighVoltage:PhoenixContact_MCV_1,5_4-G-5.08_1x04_P5.08mm_Vertical",~,,ok
+J2 ,1,Barrel_Jack,Connector_BarrelJack:BarrelJack_Horizontal,~,,ok
+J3 ,1,Conn_01x04_Male,Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Vertical,~,,ok
+R1 R2 ,2,2k2,Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder,"RND 0805 1 2,2K",6,
+R10 ,1,120R,Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder,RND 0805 1 120,3,
+R6 ,1,PT 10-L 100K,Potentiometer_THT:Potentiometer_Piher_PT-10-V10_Vertical,PT 10-L 100K,3,
+,1,,Steckachse,PIH XEJPL5012GR,3,
+R8 ,1,47k,Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder,RND 0805 1 47K,3,
+R9 R3 ,2,100k,Resistor_SMD:R_0805_2012Metric_Pad1.15x1.40mm_HandSolder,RND 0805 1 100K,,ok
+SW3 SW1 ,2,SW_Push,Button_Switch_THT:SW_PUSH_6mm_H9.5mm,~,,ok
+U1 ,1,LC78_05-0.5,Package_TO_SOT_THT:TO-220-3_Vertical,LC78_05-0.5,3,
+U3 ,1,ADM485,Package_SO:SOIC-8_3.9x4.9mm_P1.27mm,ADM 485 JR,3,
+,,Arduino UNO,,,,ok
+,,Power Adpator ,"28V, 5.5/2.1mm Jack",MW GST18E28,,
