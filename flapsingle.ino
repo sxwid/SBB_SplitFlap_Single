@@ -4,21 +4,28 @@ Versions chronology:
 version 1   - 18.10.2020 Simon Widmer 
 */
 
+
 #include <Wire.h>
 #include <SoftwareSerial.h>
 
-#define RX        3    // Soft Serial RS485 RO
-#define TX        6    // Soft Serial RS485 DI
-#define RTS       7    // RS485 Direction control DE / ^RE
+#define RX        3    // Soft Serial RS485 Receive pin
+#define TX        6    // Soft Serial RS485 Transmit pin
+#define RTS       7    // RS485 Direction control
 #define POT       A0    // Potentiometer
 #define PB1       2    // Pushbutton
-#define DIP1      12    // DIP1
-#define DIP2      11    // DIP2
-#define DIP3      10    // DIP3
-#define DIP4      9    // DIP4
+#define PB2       9    // Pushbutton
+#define LED1      4    // DIP1
+#define LED2      5   // DIP2
+
 #define RS485Transmit    HIGH
 #define RS485Receive     LOW
 #define RS485_BDRATE     19200
+
+#define TIMEOUT_DELAY    100
+#define MAX_ADDR          30
+
+#define TYPE_61         66
+#define TYPE_40         65
 
 SoftwareSerial RS485Serial(RX, TX);
 
@@ -27,9 +34,11 @@ byte stat_blank[] = {0,30,32,34,36,41,42,43,45,46,47,48,49,50,51,52,53,54,55,56,
 unsigned long lastRandom1 = 0; //last time new station appeared
 unsigned long presetRandom1 = 0; //
 
-const byte maxflap = 30;
 byte pos = 0;
 byte addr_stat = 0;
+byte type = 0;
+byte maxflap = 30;
+
 //
 // Methods
 //_____________________________________________________________________________________________
@@ -42,6 +51,34 @@ void init_timers(){
   Serial.print("Timerinit: "); 
   Serial.print(presetRandom1/1000); 
   Serial.println(" s"); 
+}
+
+// Detect Adress and Type
+bool detectmodule(){
+  bool module_ok=false;
+  while (!module_ok && addr_stat < MAX_ADDR){
+    if(getflaptype(addr_stat))
+    {
+      module_ok=true;
+    }
+    else
+    {
+      ++addr_stat;
+    }
+  }
+  if(module_ok)
+  {
+    Serial.print("Modul mit Adresse ");
+    Serial.print(addr_stat);
+    Serial.print(" vom Typ ");
+    Serial.print(type);
+    Serial.println(" gefunden");
+  }
+  else
+  {
+    Serial.println("Kein Modul gefunden");    
+  }
+  
 }
 
 // Generate Number 1-maxflap which is not blanked
@@ -101,21 +138,45 @@ void setflap(byte address, byte pos){
   Serial.println(pos);
 }
 
-void getflaptype(byte address){
-  byte type = 0;
+bool getflaptype(byte address){
   sendBreak(60);
   RS485Serial.write(0xFF);
   RS485Serial.write(0xDD);
   RS485Serial.write(address);
   digitalWrite(RTS, RS485Receive);
-  while (RS485Serial.available() == 0) {
-    // Wait for RS485 Data
+  
+  unsigned long start = millis();
+  unsigned long timeout = TIMEOUT_DELAY; 
+  bool to = false;
+  
+  while (RS485Serial.available() == 0 && to == false) {
+      unsigned long now = millis();
+      unsigned long elapsed = now - start;
+      if(elapsed > timeout)
+        to = true;
   }
   if (RS485Serial.available()>0)
   {
     type = RS485Serial.read();
-    Serial.print("Typ: 0x");
-    Serial.println(type,HEX);
+    switch(type){
+      case TYPE_61:
+        maxflap = 60;
+        Serial.println("Modul 60 detektiert");
+        break;
+      case TYPE_40:
+        maxflap = 40;
+        Serial.println("Modul 40 detektiert");
+        break;
+      default:
+        Serial.println("Unbekanntes Modul");
+        break;
+    }
+    return true;
+  }
+  else
+  {
+    Serial.println("Timeout");
+    return false;
   }
 }
 
@@ -145,22 +206,16 @@ void setup() {
   randomSeed(analogRead(5));
     
   pinMode(RTS, OUTPUT);  
-  pinMode(DIP1, INPUT);  
-  pinMode(DIP2, INPUT);  
-  pinMode(DIP3, INPUT);  
-  pinMode(DIP4, INPUT);  
+  pinMode(LED1, OUTPUT);  
+  pinMode(LED2, OUTPUT);  
   pinMode(PB1, INPUT);  
+  pinMode(PB2, INPUT);  
   attachInterrupt(digitalPinToInterrupt(PB1), addflap, FALLING);
-
-  // Set address
-  addr_stat = digitalRead(DIP1)*1+digitalRead(DIP2)*2+digitalRead(DIP3)*4+digitalRead(DIP4)*8;
-  
+    
   // Start the built-in serial port, for Serial Monitor
   Serial.begin(115200);
   Serial.println("*******************************************************************************"); 
   Serial.println("Fallblattanzeiger"); 
-  Serial.print("Adresse: "); 
-  Serial.println(addr_stat); 
 
   //Init Timers
   init_timers();
@@ -169,8 +224,7 @@ void setup() {
   RS485Serial.begin(RS485_BDRATE);  
   delay(100);
 
-  getflaptype(addr_stat);
-  Serial.println(""); 
+  detectmodule();
   
   sf_noshow();
   delay(3000);
