@@ -73,6 +73,8 @@ bool detectmodule(){
     Serial.print(" vom Typ ");
     Serial.print(type);
     Serial.println(" gefunden");
+    digitalWrite(LED1, HIGH);
+
   }
   else
   {
@@ -211,6 +213,9 @@ void setup() {
   pinMode(PB1, INPUT);  
   pinMode(PB2, INPUT);  
   attachInterrupt(digitalPinToInterrupt(PB1), addflap, FALLING);
+
+  digitalWrite(LED1, HIGH);
+  digitalWrite(LED2, HIGH);
     
   // Start the built-in serial port, for Serial Monitor
   Serial.begin(115200);
@@ -223,6 +228,9 @@ void setup() {
   // Serial for RS485
   RS485Serial.begin(RS485_BDRATE);  
   delay(100);
+
+  digitalWrite(LED1, LOW);
+  digitalWrite(LED2, LOW);
 
   detectmodule();
   
